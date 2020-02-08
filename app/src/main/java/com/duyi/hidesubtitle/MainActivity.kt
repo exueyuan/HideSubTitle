@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+
+        bt_close.setOnClickListener {
+            IntentSkip.startFloatService(this@MainActivity, startOrHide = false)
+        }
     }
 
     //开启悬浮窗的service
@@ -72,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                 ), REQUEST_CODE
             )
         } else {
+            //打开弹窗
             IntentSkip.startFloatService(this)
         }
     }
@@ -89,6 +94,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show()
+                //打开弹窗
                 IntentSkip.startFloatService(this)
             }
         }

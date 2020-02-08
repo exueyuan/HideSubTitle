@@ -16,6 +16,7 @@ class FloatingService : Service() {
     companion object {
         const val INTENT_WIDTH = "intent_width"
         const val INTENT_HEIGHT = "intent_height"
+        const val INTENT_START_HIDE = "intent_start_hide"
 
         const val DEFAULT_WIDTH = 500
         const val DEFAULT_HEIGHT = 100
@@ -55,32 +56,42 @@ class FloatingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (isStarted) {
-            val width = intent?.getIntExtra(INTENT_WIDTH, DEFAULT_WIDTH) ?: DEFAULT_WIDTH
-            val height = intent?.getIntExtra(INTENT_HEIGHT, DEFAULT_HEIGHT) ?: DEFAULT_HEIGHT
-            if (width > 0) {
-                val widthCenter = layoutParams.x + layoutParams.width/2
-                layoutParams.x = widthCenter - width/2
-                layoutParams.width = width
-            }
-            if (height > 0) {
-                layoutParams.height = height
-            }
+        val startHide = intent?.getBooleanExtra(INTENT_START_HIDE, true)?:true
+        if (startHide) {
+            if (isStarted) {
+                val width = intent?.getIntExtra(INTENT_WIDTH, DEFAULT_WIDTH) ?: DEFAULT_WIDTH
+                val height = intent?.getIntExtra(INTENT_HEIGHT, DEFAULT_HEIGHT) ?: DEFAULT_HEIGHT
+                if (width > 0) {
+                    val widthCenter = layoutParams.x + layoutParams.width / 2
+                    layoutParams.x = widthCenter - width / 2
+                    layoutParams.width = width
+                }
+                if (height > 0) {
+                    layoutParams.height = height
+                }
 
-            windowManager.updateViewLayout(rootView, layoutParams)
+                windowManager.updateViewLayout(rootView, layoutParams)
+            } else {
+                showFloatingWindow()
+            }
         } else {
-            isStarted = true
-            showFloatingWindow()
+            hideFloatingWindow()
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun showFloatingWindow() {
+        isStarted = true
         rootView = View(this)
         rootView?.setBackgroundColor(Color.BLUE)
         windowManager.addView(rootView, layoutParams)
 
         rootView?.setOnTouchListener(FloatingOnTouchListener())
+    }
+
+    private fun hideFloatingWindow() {
+        isStarted = false
+        windowManager.removeView(rootView)
     }
 
     //设置触摸listenner
