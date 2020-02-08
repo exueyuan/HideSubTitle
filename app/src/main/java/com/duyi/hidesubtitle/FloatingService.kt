@@ -75,7 +75,9 @@ class FloatingService : Service() {
                 showFloatingWindow()
             }
         } else {
-            hideFloatingWindow()
+            if (isStarted) {
+                hideFloatingWindow()
+            }
         }
         return super.onStartCommand(intent, flags, startId)
     }
